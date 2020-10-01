@@ -1,13 +1,5 @@
 #!/bin/sh
 # fork of ufetch-arch - tiny system info for arch
-## INFO
-
-os='Arch Linux'
-kernel="$(uname -sr)"
-uptime="$(uptime -p | sed 's/up //')"
-packages="$(pacman -Q | wc -l)"
-shell="$(basename "$SHELL")"
-
 if [ -n "${DE}" ]; then
 	ui="${DE}"
 	uitype='DE'
@@ -32,7 +24,6 @@ else
 fi
 ui="$(basename ${ui})"
 
-# probably don't change these
 if [ -x "$(command -v tput)" ]; then
 	blue="$(tput setaf 4)"
 	reset="$(tput sgr0)"
@@ -42,13 +33,16 @@ lc="${reset}${bold}${blue}"         # labels
 nc="${reset}${bold}${blue}"         # user and hostname
 ic="${reset}"                       # info
 c0="${reset}${blue}"                # first color
+os='Arch Linux'
+kernel="$(uname -sr)"
+uptime="$(uptime -p | sed 's/up //')"
+packages="$(pacman -Q | wc -l)"
 
 cat <<EOF
 ${lc}OS:        ${ic}${os}${reset}
 ${lc}KERNEL:    ${ic}${kernel}${reset}
 ${lc}UPTIME:    ${ic}${uptime}${reset}
 ${lc}PACKAGES:  ${ic}${packages}${reset}
-${lc}SHELL:     ${ic}${shell}${reset}
 ${lc}${uitype}:        ${ic}${ui}${reset}
 
 EOF
