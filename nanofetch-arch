@@ -1,0 +1,54 @@
+#!/bin/sh
+# fork of ufetch-arch - tiny system info for arch
+## INFO
+
+os='Arch Linux'
+kernel="$(uname -sr)"
+uptime="$(uptime -p | sed 's/up //')"
+packages="$(pacman -Q | wc -l)"
+shell="$(basename "$SHELL")"
+
+if [ -n "${DE}" ]; then
+	ui="${DE}"
+	uitype='DE'
+elif [ -n "${WM}" ]; then
+	ui="${WM}"
+	uitype='WM'
+elif [ -n "${XDG_CURRENT_DESKTOP}" ]; then
+	ui="${XDG_CURRENT_DESKTOP}"
+	uitype='DE'
+elif [ -n "${DESKTOP_SESSION}" ]; then
+	ui="${DESKTOP_SESSION}"
+	uitype='DE'
+elif [ -f "${HOME}/.xinitrc" ]; then
+	ui="$(tail -n 1 "${HOME}/.xinitrc" | cut -d ' ' -f 2)"
+	uitype='WM'
+elif [ -f "${HOME}/.xsession" ]; then
+	ui="$(tail -n 1 "${HOME}/.xsession" | cut -d ' ' -f 2)"
+	uitype='WM'
+else
+	ui='unknown'
+	uitype='UI'
+fi
+ui="$(basename ${ui})"
+
+# probably don't change these
+if [ -x "$(command -v tput)" ]; then
+	blue="$(tput setaf 4)"
+	reset="$(tput sgr0)"
+fi
+
+lc="${reset}${bold}${blue}"         # labels
+nc="${reset}${bold}${blue}"         # user and hostname
+ic="${reset}"                       # info
+c0="${reset}${blue}"                # first color
+
+cat <<EOF
+${lc}OS:        ${ic}${os}${reset}
+${lc}KERNEL:    ${ic}${kernel}${reset}
+${lc}UPTIME:    ${ic}${uptime}${reset}
+${lc}PACKAGES:  ${ic}${packages}${reset}
+${lc}SHELL:     ${ic}${shell}${reset}
+${lc}${uitype}:        ${ic}${ui}${reset}
+
+EOF
